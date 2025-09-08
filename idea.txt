@@ -1,1 +1,2 @@
 Provide audio description or caption as well to deepen understanding
+Provide raw footage description to description chunk better

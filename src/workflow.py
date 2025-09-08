@@ -1,4 +1,4 @@
-from extract_chunk import extract_chunks
+from src.extract_chunk import extract_chunks
 
 def workflow(file_path: str, prompt: str): 
     # 1. Extract chunks with meaning from video

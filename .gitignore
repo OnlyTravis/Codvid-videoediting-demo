@@ -1,1 +1,6 @@
-/data
+# Python
+__pycache__
+
+# Data
+/data/*
+/tmp/*
