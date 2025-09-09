@@ -1,8 +1,12 @@
-from src.extract_chunk import extract_chunks
+from src.extract_chunk import ExtractChunkSettings, extract_chunks
 
-def workflow(file_path: str, prompt: str): 
+def workflow(file_path: str, user_prompt: str): 
     # 1. Extract chunks with meaning from video
-    chunks = extract_chunks(file_path)
+    extract_settings = ExtractChunkSettings(
+        small_chunk_per_second=0.67,
+        frame_per_small_chunk=3,
+    )
+    chunks = extract_chunks(file_path, user_prompt, extract_settings)
 
     # 2. Generate video script with chunk descritions & prompt
     

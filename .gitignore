@@ -1,6 +1,10 @@
-# Python
+# General
 __pycache__
+.vscode
 
 # Data
-/data/*
+/_test_data/
 /tmp/*
+/_ref/
+/logs/
+.env

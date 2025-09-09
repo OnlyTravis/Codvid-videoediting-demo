@@ -1,2 +1,5 @@
+Limit request to ~30 film strip to avoid ordering problems.
+(description of some film strip is skipped when no. film strip > 30)
+
 Provide audio description or caption as well to deepen understanding
 Provide raw footage description to description chunk better
