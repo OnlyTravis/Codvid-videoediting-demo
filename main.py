@@ -1,6 +1,6 @@
 import dotenv
-from src.classes.logger import Logger
-from src.classes.api_manager import APIManager
+from src.tools.logger import Logger
+from src.tools.api_manager import APIManager
 from src.workflow import workflow
 
 from src.tests import test_1

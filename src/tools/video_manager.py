@@ -8,7 +8,7 @@ import base64
 
 from cv2.typing import MatLike
 
-from src.classes.logger import Logger
+from src.tools.logger import Logger
 
 class VideoManager:
     @classmethod

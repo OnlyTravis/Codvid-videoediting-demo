@@ -1,4 +1,4 @@
-from src.classes.logger import Logger
+from src.tools.logger import Logger
 from src.workflow import workflow
 
 def test_1():

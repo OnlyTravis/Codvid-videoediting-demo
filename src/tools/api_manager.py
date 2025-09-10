@@ -4,7 +4,7 @@ import os
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, SystemMessage, BaseMessage
 
-from src.classes.logger import Logger
+from src.tools.logger import Logger
 
 film_strip_schema = {
     "type": "array",
@@ -45,8 +45,7 @@ class APIManager:
         cls._google_llm_film_strip = cls._google_llm.with_structured_output(schema=film_strip_schema, method="json_mode")
     
     @classmethod
-    def describe_film_strips(cls, messages: list[BaseMessage]):
-        Logger.log_file('film_strip_input.txt', messages)
+    def describe_film_strips(cls, messages: list[BaseMessage]) -> BaseMessage:
         res = cls._google_llm_film_strip.invoke(messages)
-        Logger.log_file('film_strip_output.json', res)
-
+        return res
+    
