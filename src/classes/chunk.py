@@ -12,3 +12,7 @@ class SmallChunk:
     @property
     def duration(self):
         return self.frame_end+self.frame_start
+
+class Chunk:
+    def __init__(self):
+        pass

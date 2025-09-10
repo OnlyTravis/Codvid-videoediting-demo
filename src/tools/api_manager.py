@@ -4,25 +4,8 @@ import os
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, SystemMessage, BaseMessage
 
+from src.classes.structured_output import SmallChunksOutputSchema
 from src.tools.logger import Logger
-
-film_strip_schema = {
-    "type": "array",
-    "items": {
-        "type": "object",
-        "properties": {
-            "film_strip_name": {
-                "type": "string",
-                "description": "The name should be 'filmstrip_<index>' where index starts at 1."
-            },
-            "description": {
-                "type": "string",
-                "description": "Detailed description of the film strip."
-            }
-        },
-        "required": ["description"]
-    }
-}
 
 class APIManager:
     _google_llm: ChatGoogleGenerativeAI
@@ -42,10 +25,9 @@ class APIManager:
             timeout=None,
             max_retries=2,
         )
-        cls._google_llm_film_strip = cls._google_llm.with_structured_output(schema=film_strip_schema, method="json_mode")
+        cls._google_llm_film_strip = cls._google_llm.bind_tools([SmallChunksOutputSchema])
     
     @classmethod
     def describe_film_strips(cls, messages: list[BaseMessage]) -> BaseMessage:
         res = cls._google_llm_film_strip.invoke(messages)
         return res
-    

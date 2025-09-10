@@ -3,7 +3,7 @@ import cv2
 from src.tools.logger import Logger
 from src.tools.api_manager import APIManager
 from src.tools.video_manager import VideoManager
-from src.classes.chunk import Chunk
+from src.classes.chunk import SmallChunk, Chunk
 from src.classes.settings import ExtractChunkSettings
 from langchain_core.messages import HumanMessage, SystemMessage, BaseMessage
 
@@ -35,16 +35,16 @@ def extract_chunks(video_path: str, user_prompt: str, extract_settings: ExtractC
     list_num = 0
     count = 0
     for i in range(0, msgs_count):
-        # 2.1 Fetch frames and merge into film strip
+        # 3.1 Fetch frames and merge into film strip
         frames_arr = [cv2.imread(f'{frame_folder_path}/{x}.jpg') for x in range(3*i, 3*i+extract_settings.frame_per_small_chunk)]
         film_strip = VideoManager.merge_frames_to_file_strip(frames_arr)
         del frames_arr
 
-        # 2.2 Log film strip output (if enabled)
+        # 3.2 Log film strip output (if enabled)
         if (Logger.enabled):
             cv2.imwrite(Logger.to_path(f'film_strip_{i:0>3}.jpg'), film_strip)
 
-        # 2.3. Append Messages
+        # 3.3. Append Messages
         msgs_lists[list_num].append(
             HumanMessage(
                 content=[
@@ -61,7 +61,7 @@ def extract_chunks(video_path: str, user_prompt: str, extract_settings: ExtractC
         )
         del film_strip
 
-        # 2.4 Check if increment list_num
+        # 3.4 Check if increment list_num
         count += 1
         if (count >= msgs_per_list + 1 if (list_num+1 >= buffered_msgs_list) else 0):
             count = 0
@@ -70,9 +70,14 @@ def extract_chunks(video_path: str, user_prompt: str, extract_settings: ExtractC
     VideoManager.remove_frame_folder(frame_folder_path)
     Logger.log_print("Finished Merging Frames & Building messages!")
     
-    # 3. Send to LLM
+    # 4. Send to LLM
     for i in range(len(msgs_lists)):
-        res = APIManager.describe_film_strips(messages=msgs_lists[i])
-        Logger.log_file(f'extract_smlchunk_output_{i+1}.json', res)
+        Logger.log_print(f'Sending Request {i+1} to llm...')
+        res = APIManager.describe_film_strips(messages=msgs_lists[i][:8]) # for testing
+        Logger.log_print(f'Responce to Request {i+1} Received!')
+        output = res[0]["args"]
+        Logger.log_file(f'extract_smlchunk_output_{i+1}.json', output)
+
+        break # for testing
 
     return []

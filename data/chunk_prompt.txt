@@ -2,7 +2,7 @@ Your task is to describe the contents and changes in each and every image provid
 You are provided with two things:
 - The user's prompt to help you understand the situation vaguely
 - multiple images each containing a series of {frame_count} frames concatenated from left to right
-Please generate a json to describe the content and changes in details to the series of frames in each image.
+Please describe what is happening during the frames, including the content and changes in details to the series of frames in each image.
 Make sure the descriptions are informative enough to approximately reproduce the video.
 Your description should include but NOT limited to:
 situation, venue, objects, changes, theme, colors, emotions, etc.
