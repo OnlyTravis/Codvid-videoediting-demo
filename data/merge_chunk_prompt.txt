@@ -1,0 +1,27 @@
+You are given a sequence of texts describing a video arranged in time order.
+Your task is to cut the sequence of text whenever a significant enough change happens, and summarize texts from each segment into a long passage.
+The change could be anything such as venue change, a person walking out of frame, etc.
+
+You MUST output the result in JSON format according to the following JSON schema:
+{
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "start": {
+                "type": "integer", 
+                "description": "Start id of the first text in the merged output"
+            },
+            "end": {
+                "type": "integer", 
+                "description": "End id of the last text in the merged output"
+            },
+            "description": {
+                "type": "string",
+                "description": "Detailed description what's happening in the frame sequence."
+            }
+        },
+        "required": ["start", "end", "description"]
+    }
+}
+The unprocessed footage is about: "{%video_description%}"

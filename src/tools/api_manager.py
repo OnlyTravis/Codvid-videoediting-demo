@@ -2,7 +2,7 @@ import getpass
 import os
 
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.messages import HumanMessage, SystemMessage, BaseMessage
+from langchain_core.messages import BaseMessage, AIMessage
 
 from src.classes.structured_output import SmallChunksOutputSchema
 from src.tools.logger import Logger
@@ -25,9 +25,17 @@ class APIManager:
             timeout=None,
             max_retries=2,
         )
-        cls._google_llm_film_strip = cls._google_llm.bind_tools([SmallChunksOutputSchema])
+        cls._google_llm_frame_seq = cls._google_llm.bind_tools([SmallChunksOutputSchema])
     
     @classmethod
-    def describe_film_strips(cls, messages: list[BaseMessage]) -> BaseMessage:
-        res = cls._google_llm_film_strip.invoke(messages)
+    def describe_frame_seq(cls, messages: list[BaseMessage]) -> AIMessage:
+        res = cls._google_llm_frame_seq.invoke(messages)
         return res
+    
+    @classmethod
+    def format_prompt(cls, prompt: str, *args, **kwargs) -> str:
+        '''
+        Formats prompt in '{%<name>%}' format to prevent conflict with curly brackets\n
+        e.g. 'xx{%id:0>2%}xxx' = f'xx{id:0>2}xxx'
+        '''
+        return prompt.replace('{', '{{').replace('}', '}}').replace('{{%', '{').replace('%}}', '}').format(*args, **kwargs)

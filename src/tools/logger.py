@@ -41,6 +41,8 @@ class Logger:
             f.write(json.dumps(cls._settings.toDict()))
 
         # 3. Create log folder
+        if (not os.path.isdir('./logs')):
+            os.mkdir('./logs')
         cls.log_folder_path = f'./logs/log_{cls._settings.log_index:0>2}'
         os.mkdir(cls.log_folder_path)
 
@@ -77,3 +79,8 @@ class Logger:
             f = open(cls.to_path(file_name), 'w')
         f.write(data)
         f.close()
+    
+    @classmethod
+    def create_folder(cls, folder_name: str):
+        if (not cls.enabled): return
+        os.mkdir(cls.to_path(folder_name))

@@ -10,7 +10,7 @@ from cv2.typing import MatLike
 
 from src.tools.logger import Logger
 
-class VideoManager:
+class VideoHelper:
     @classmethod
     def extract_all_frames(cls, video_path: str, interval_s: float, max_size: int = -1) -> tuple[int, str]:
         """
@@ -54,9 +54,9 @@ class VideoManager:
         return (count, frame_folder)
 
     @classmethod    
-    def merge_frames_to_file_strip(cls, frame_list: list[MatLike]) -> MatLike:
-        film_strip = np.concatenate(frame_list, axis=1)
-        return film_strip
+    def merge_frames_to_frame_seq(cls, frame_list: list[MatLike]) -> MatLike:
+        frame_seq = np.concatenate(frame_list, axis=1)
+        return frame_seq
     
     @classmethod
     def video_path_to_base64(cls, video_path: str) -> str:

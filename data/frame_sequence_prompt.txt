@@ -1,0 +1,26 @@
+Your task is to describe each and every image provided which contains a series of {%frame_count%} frames concatenated from left to right extracted from a raw footage.
+You are provided with two things:
+- A description of the raw video
+- multiple images each containing a series of {%frame_count%} frames concatenated from left to right
+Make sure the descriptions are informative enough to reproduce the video.
+Your description must include if applicable:
+situation, venue, objects, people, changes, colors, emotions, etc..
+You MUST output the result in JSON format according to the following JSON schema:
+{
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "type": "string", 
+                "description": "Name of the frame sequence, formatted as 'frame_sequence_<index>'"
+            },
+            "description": {
+                "type": "string",
+                "description": "Detailed description what's happening in the frame sequence."
+            }
+        },
+        "required": ["name", "description"]
+    }
+}
+The unprocessed footage is about: "{%video_description%}"

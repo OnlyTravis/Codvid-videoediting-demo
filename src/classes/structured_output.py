@@ -1,9 +1,9 @@
 from pydantic import BaseModel, Field
 
 class SmallChunkSchema(BaseModel):
-    # Allow llm to link the output to the input film_strip (Hopefully)
-    name: str = Field(description="Name of the film strip, formatted as 'film_strip_<index>'")
-    descriptions: str = Field(description="Detailed description what's happening in the film strip.")
+    # Allow llm to link the output to the input frame_sequence (Hopefully)
+    name: str = Field(description="Name of the frame sequence, formatted as 'frame_sequence_<index>'")
+    description: str = Field(description="Detailed description what's happening in the frame sequence.")
 
 class SmallChunksOutputSchema(BaseModel):
-    output: list[SmallChunkSchema] = Field(description="Output of results from each and every film strip")
+    output: list[SmallChunkSchema] = Field(description="List of output from each and every frame sequence")

@@ -1,7 +1,7 @@
 import dotenv
 from src.tools.logger import Logger
 from src.tools.api_manager import APIManager
-from src.workflow import workflow
+from src.classes.video_splitter import VideoSpliter
 
 from src.tests import test_1
 
@@ -12,6 +12,7 @@ def main():
 
     Logger.init(enabled=True)
     APIManager.init()
+    VideoSpliter.init()
 
     test_1()
 
