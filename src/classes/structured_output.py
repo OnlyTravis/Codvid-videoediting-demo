@@ -7,3 +7,12 @@ class SmallChunkSchema(BaseModel):
 
 class SmallChunksOutputSchema(BaseModel):
     output: list[SmallChunkSchema] = Field(description="List of output from each and every frame sequence")
+
+class ChunkSchema(BaseModel):
+    # Allow llm to link the output to the input frame_sequence (Hopefully)
+    start: int = Field(description="Id of the first text in the group")
+    end: int = Field(description="Id of the last text in the group")
+    summary: str = Field(description="A summary of every text included in the group.")
+
+class GroupChunksOutputSchema(BaseModel):
+    output: list[ChunkSchema] = Field(description="List of output of every grouped text")

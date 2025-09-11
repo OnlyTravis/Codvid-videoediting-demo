@@ -17,7 +17,8 @@ def test_1():
     split_settings = VideoSplitSettings(
         small_chunk_per_second=0.67,
         frame_per_small_chunk=3,
-        max_film_strip_per_message=30
+        max_frame_seq_per_request=30,
+        max_small_chunk_per_message=30
     )
     video_splitter = VideoSpliter(file_name, video_descriptions[0], split_settings)
     video_splitter.split_video()

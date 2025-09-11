@@ -1,6 +1,8 @@
-You are given a sequence of texts describing a video arranged in time order.
-Your task is to cut the sequence of text whenever a significant enough change happens, and summarize texts from each segment into a long passage.
+You are given a sequence of {%text_count%} texts describing a video arranged in time order.
+Your task is to group consecutive texts with similar contents into text groups, and summarize all texts in each group into a long passage.
+Separate the texts into another group whenever a significant enough change happens.
 The change could be anything such as venue change, a person walking out of frame, etc.
+All {%text_count%} texts must be included in exactly 1 group.
 
 You MUST output the result in JSON format according to the following JSON schema:
 {
@@ -10,18 +12,18 @@ You MUST output the result in JSON format according to the following JSON schema
         "properties": {
             "start": {
                 "type": "integer", 
-                "description": "Start id of the first text in the merged output"
+                "description": "Id of the first text in the group"
             },
             "end": {
                 "type": "integer", 
-                "description": "End id of the last text in the merged output"
+                "description": "Id of the last text in the group"
             },
-            "description": {
+            "summary": {
                 "type": "string",
-                "description": "Detailed description what's happening in the frame sequence."
+                "description": "A summary of every text included in the group."
             }
         },
-        "required": ["start", "end", "description"]
+        "required": ["start", "end", "summary"]
     }
 }
 The unprocessed footage is about: "{%video_description%}"

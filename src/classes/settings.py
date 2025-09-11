@@ -2,13 +2,15 @@ class VideoSplitSettings:
     def __init__(self,
                  small_chunk_per_second: float,
                  frame_per_small_chunk: int,
-                 max_film_strip_per_message: int):
+                 max_frame_seq_per_request: int,
+                 max_small_chunk_per_message):
         if (frame_per_small_chunk % 2 != 1):
             raise Exception("frame_per_small_chunk must be an odd number in VideoSplitSettings!")
         
         self.small_chunk_per_second: float = small_chunk_per_second
         self.frame_per_small_chunk: int = frame_per_small_chunk
-        self.max_film_strip_per_message: int = max_film_strip_per_message
+        self.max_frame_seq_per_request: int = max_frame_seq_per_request
+        self.max_small_chunk_per_message: int = max_small_chunk_per_message
 
     def get_chunk_time_range(self, chunk_index) -> tuple[int, int]:
         '''

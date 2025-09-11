@@ -14,5 +14,16 @@ class SmallChunk:
         return self.frame_end+self.frame_start
 
 class Chunk:
-    def __init__(self):
-        pass
+    def __init__(self,
+                 id: int,
+                 summary: str,
+                 chunk_start: float,
+                 chunk_end: float):
+        self.id: int = id
+        self.summary: int = summary
+        self.chunk_start: int = chunk_start
+        self.chunk_end: int = chunk_end
+    
+    @property
+    def duration(self):
+        return self.frame_end+self.frame_start

@@ -1,4 +1,4 @@
-from src.classes.chunk import SmallChunk
+from src.classes.chunk import Chunk, SmallChunk
 from src.classes.settings import VideoSplitSettings
 
 class ResponceParser:
@@ -10,3 +10,12 @@ class ResponceParser:
         '''
         time_range = split_settings.get_chunk_time_range(msg_index)
         return SmallChunk(msg_index, chunk_data['description'], time_range[0], time_range[1])
+    
+    @classmethod
+    def parse_chunk_output(cls, chunk_data: dict, split_settings: VideoSplitSettings, msg_index: int) -> Chunk:
+        '''
+        Converts structure dict output from LLM to Chunk
+        msg_index: Starts from 0
+        '''
+        # change later
+        pass

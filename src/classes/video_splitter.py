@@ -38,16 +38,23 @@ class VideoSpliter:
         Logger.log_file('./small_chunks.txt', small_chunks)
 
         # 3. Merge into larger chunks
-
+        chunks = self._merge_small_chunks(small_chunks)
 
         # 4. (to be determined) 
+        VideoHelper.remove_frame_folder(frame_folder_path)
 
     def _describe_small_chunks(self, frame_folder_path: str, frame_count: int) -> list[SmallChunk]:
+        '''
+        [Frame][Frame]...[Frame] -> [Frame | Frame | Frame][Frame | Frame | Frame]...[Frame | Frame | Frame]\n
+        [] : 1 image\n
+        [Frame | Frame | Frame]...[Frame | Frame | Frame] --{LLM}--> (description)...(description)
+        '''
         # 1. Calculate msg params
         msgs_count = frame_count // self.settings.frame_per_small_chunk
-        msgs_list_count = ceil(msgs_count / self.settings.max_film_strip_per_message)
+        msgs_list_count = ceil(msgs_count / self.settings.max_frame_seq_per_request)
         msgs_per_list = msgs_count // msgs_list_count
         buffered_msgs_list = msgs_count - msgs_per_list * msgs_list_count # no. of lists with an additional message
+        Logger.log_print('***** Describe Frame Sequences *****')
         Logger.log_print(f'No. of Messages: {msgs_count}')
         Logger.log_print(f'No. of Message Lists: {msgs_list_count}')
         Logger.log_print(f'Messages per List: {msgs_per_list}')
@@ -96,25 +103,66 @@ class VideoSpliter:
             if (count >= msgs_per_list + 1 if (list_num+1 >= buffered_msgs_list) else 0):
                 count = 0
                 list_num += 1
-        VideoHelper.remove_frame_folder(frame_folder_path)
         Logger.log_print("Finished Merging Frames & Building messages!")
 
         # 3. Ask LLM to describe frame sequence
-        small_chunks: list[SmallChunk] = []
-        index = 0
-        for i in range(len(msgs_lists)):
-            Logger.log_print(f'Sending Request {i+1} to llm...')
-            ai_msg = APIManager.describe_frame_seq(messages=msgs_lists[i])
-            Logger.log_print(f'Responce to Request {i+1} Received!')
-            res = ai_msg.tool_calls[0]['args']
-            Logger.log_file(f'extract_smlchunk_output_{i+1}.txt', res)
-            small_chunks.extend([
-                ResponceParser.parse_small_chunk_output(res['output'][j], self.settings, index+j) 
-                for j in range(len(res['output']))
-            ])
-            index += len(res['output'])
-            break # For testing
-        return small_chunks
+        return APIManager.describe_frame_seq(msgs_lists, self.settings)
     
     def _merge_small_chunks(self, small_chunks: list[SmallChunk]) -> Chunk:
-        pass
+        # 1. Calculate msg params
+        msgs_count = len(small_chunks)
+        msgs_list_count = ceil(msgs_count / self.settings.max_small_chunk_per_message)
+        msgs_count += msgs_list_count-1 # Padding : [1-40] -> [1-20][20-40]
+        msgs_per_list = msgs_count // msgs_list_count
+        buffered_msgs_list = msgs_count - msgs_per_list * msgs_list_count # no. of lists with an additional message
+        Logger.log_print('***** Merging Small Chunks *****')
+        Logger.log_print(f'No. of Messages: {msgs_count}')
+        Logger.log_print(f'No. of Message Lists: {msgs_list_count}')
+        Logger.log_print(f'Messages per List: {msgs_per_list}')
+        Logger.log_print(f'No. of Buffered Lists: {buffered_msgs_list}')
+
+        # 2. Construct Messages Lists
+        msgs_lists = [[SystemMessage(APIManager.format_prompt(
+            self._merge_chunk_prompt,
+            video_description=self.video_description, 
+            text_count=msgs_per_list + 1 if (i+1 >= buffered_msgs_list) else 0
+        ))] for i in range(msgs_list_count)]
+        list_num = 0
+        count = 0
+        for i in range(0, len(small_chunks)):
+            # 2.1 Add to msg list
+            msgs_lists[list_num].append(
+                HumanMessage(
+                    content=[
+                        {
+                            "type": "text", 
+                            "text": f"text_{len(msgs_lists[list_num])}: {small_chunks[i].description}"
+                        },
+                    ]
+                )
+            )
+
+            # 2.2 Check if next message list
+            count += 1
+            if (count >= msgs_per_list + (1 if (list_num+1 >= buffered_msgs_list) else 0)):
+                list_num += 1
+                count = 1
+
+                # if not last chunk, add self to next list (as padding)
+                if (i+1 == len(small_chunks)): break
+                msgs_lists[list_num].append(
+                    HumanMessage(
+                        content=[
+                            {
+                                "type": "text", 
+                                "text": f"text_{len(msgs_lists[list_num])}: {small_chunks[i].description}"
+                            },
+                        ]
+                    )
+                )
+        Logger.log_file('merge_chunk_input.txt', msgs_lists)
+
+        # 3. Send to LLM
+        return APIManager.group_small_chunks(msgs_lists, self.settings)
+
+                
