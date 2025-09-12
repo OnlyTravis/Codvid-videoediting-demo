@@ -2,6 +2,7 @@ import dotenv
 from src.tools.logger import Logger
 from src.tools.api_manager import APIManager
 from src.classes.video_splitter import VideoSpliter
+from src.classes.video_editor import VideoEditor
 
 from src.tests import test_1
 
@@ -10,10 +11,12 @@ def main():
     debug = True
     dotenv.load_dotenv()
 
-    Logger.init(enabled=True)
+    Logger.init(enabled=debug)
     APIManager.init()
     VideoSpliter.init()
+    VideoEditor.init()
 
+    # 2. Run Test
     test_1()
 
 main()

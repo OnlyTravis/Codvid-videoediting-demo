@@ -1,0 +1,1 @@
+Your task is to generate a video script based on a user prompt and a list of detailed description of chunks from raw video footages.

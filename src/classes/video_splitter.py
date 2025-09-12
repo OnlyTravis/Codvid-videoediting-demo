@@ -3,11 +3,9 @@ import cv2
 from src.tools.logger import Logger
 from src.tools.api_manager import APIManager
 from src.tools.video_helper import VideoHelper
-from src.tools.parser import ResponceParser
 from src.classes.chunk import SmallChunk, Chunk
 from src.classes.settings import VideoSplitSettings
 from langchain_core.messages import HumanMessage, SystemMessage
-
 
 class VideoSpliter:
     _frame_sequence_prompt: str
@@ -37,11 +35,14 @@ class VideoSpliter:
         small_chunks = self._describe_small_chunks(frame_folder_path, frame_count)
         Logger.log_file('./small_chunks.txt', small_chunks)
 
-        # 3. Merge into larger chunks
+        # 3. Merge into large chunks
         chunks = self._merge_small_chunks(small_chunks)
 
-        # 4. (to be determined) 
+        # 4. Re-adjust chunk boundaries (wip)
+
+        # 5. Clean up
         VideoHelper.remove_frame_folder(frame_folder_path)
+        return chunks
 
     def _describe_small_chunks(self, frame_folder_path: str, frame_count: int) -> list[SmallChunk]:
         '''
@@ -51,7 +52,7 @@ class VideoSpliter:
         '''
         # 1. Calculate msg params
         msgs_count = frame_count // self.settings.frame_per_small_chunk
-        msgs_list_count = ceil(msgs_count / self.settings.max_frame_seq_per_request)
+        msgs_list_count = ceil(msgs_count / self.settings.max_frame_seq_per_req)
         msgs_per_list = msgs_count // msgs_list_count
         buffered_msgs_list = msgs_count - msgs_per_list * msgs_list_count # no. of lists with an additional message
         Logger.log_print('***** Describe Frame Sequences *****')
@@ -73,7 +74,7 @@ class VideoSpliter:
         count = 0
         for i in range(0, msgs_count):
             # 2.1 Fetch frames and merge into frame sequence
-            frames_arr = [cv2.imread(f'{frame_folder_path}/{x}.jpg') for x in range(3*i, 3*i+self.settings.frame_per_small_chunk)]
+            frames_arr = [cv2.imread(f'{frame_folder_path}/{x}.jpg') for x in range(self.settings.frame_per_small_chunk*i, self.settings.frame_per_small_chunk*(i+1))]
             frame_seq = VideoHelper.merge_frames_to_frame_seq(frames_arr)
             del frames_arr
 
@@ -100,19 +101,20 @@ class VideoSpliter:
 
             # 2.4 Check if next message list
             count += 1
-            if (count >= msgs_per_list + 1 if (list_num+1 >= buffered_msgs_list) else 0):
+            if (count >= msgs_per_list + (1 if (list_num+1 >= buffered_msgs_list) else 0)):
                 count = 0
                 list_num += 1
         Logger.log_print("Finished Merging Frames & Building messages!")
 
         # 3. Ask LLM to describe frame sequence
+        Logger.log_file('describe_frame_input', msgs_lists)
         return APIManager.describe_frame_seq(msgs_lists, self.settings)
     
     def _merge_small_chunks(self, small_chunks: list[SmallChunk]) -> Chunk:
         # 1. Calculate msg params
         msgs_count = len(small_chunks)
-        msgs_list_count = ceil(msgs_count / self.settings.max_small_chunk_per_message)
-        msgs_count += msgs_list_count-1 # Padding : [1-40] -> [1-20][20-40]
+        msgs_list_count = ceil(msgs_count / (self.settings.max_small_chunk_per_req-1))
+        msgs_count += msgs_list_count-1 # e.g. Padding: [1-40] -> [1-21][21-40]
         msgs_per_list = msgs_count // msgs_list_count
         buffered_msgs_list = msgs_count - msgs_per_list * msgs_list_count # no. of lists with an additional message
         Logger.log_print('***** Merging Small Chunks *****')
@@ -164,5 +166,3 @@ class VideoSpliter:
 
         # 3. Send to LLM
         return APIManager.group_small_chunks(msgs_lists, self.settings)
-
-                
