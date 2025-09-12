@@ -1,0 +1,4 @@
+You are given a video script describing the desired result of an edited video and summaries of video chunks
+The video chunks are chopped up versions of the raw footage arranged in chronological order.
+Your task is to identify chunks that are not needed based on the video script describing the desired result of an edited video
+Output an array of chunk ids of chunks that are not needed in JSON format.

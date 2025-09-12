@@ -88,8 +88,6 @@ class APIManager:
             previous_chunk_data = res['output'][-1]
             last_base_index = base_index
             base_index += res['output'][-1]['end']-1 # -1 for padding
-            print(base_index)
-            print("035353535353535353}&&&&&&&&&&&&&&&&")
         Logger.log_file(f'chunks.txt', list(map(lambda x: x.__dict__, chunks)))
         return chunks
     
@@ -100,10 +98,6 @@ class APIManager:
         Logger.log_file('video_script_raw_output.txt', ai_msg)
         return ai_msg.content
     
-    @classmethod
-    def format_prompt(cls, prompt: str, *args, **kwargs) -> str:
-        '''
-        Formats prompt in '{%<name>%}' format to prevent conflict with curly brackets\n
-        e.g. 'xx{%id:0>2%}xxx' = f'xx{id:0>2}xxx'
-        '''
-        return prompt.replace('{', '{{').replace('}', '}}').replace('{{%', '{').replace('%}}', '}').format(*args, **kwargs)
+    @classmethod 
+    def detect_redundant_chunks(cls, msgs: list[BaseMessage]) -> str:
+        pass

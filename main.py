@@ -1,5 +1,6 @@
 import dotenv
 from src.tools.logger import Logger
+from src.tools.prompts import Prompts
 from src.tools.api_manager import APIManager
 from src.classes.video_splitter import VideoSpliter
 from src.classes.video_editor import VideoEditor
@@ -12,6 +13,7 @@ def main():
     dotenv.load_dotenv()
 
     Logger.init(enabled=debug)
+    Prompts.init()
     APIManager.init()
     VideoSpliter.init()
     VideoEditor.init()

@@ -1,1 +1,4 @@
-Your task is to generate a video script based on a user prompt and a list of detailed description of chunks from raw video footages.
+You are given a user prompt describing the desired video edit and a list of detailed description of chunks from raw video footages.
+Your task is to generate a video script that describes the flow of the edited video based on the given chunks from raw video footages.
+The video script must follows the user's prompt with the given description of the video
+Output only the video script in raw text format (No text styling).

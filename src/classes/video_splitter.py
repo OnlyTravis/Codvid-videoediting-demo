@@ -1,6 +1,7 @@
 from math import ceil
 import cv2
 from src.tools.logger import Logger
+from src.tools.prompts import PromptId, Prompts
 from src.tools.api_manager import APIManager
 from src.tools.video_helper import VideoHelper
 from src.classes.chunk import SmallChunk, Chunk
@@ -14,10 +15,8 @@ class VideoSpliter:
     @classmethod
     def init(cls):
         # 1. Loading Prompt
-        with open('./data/frame_sequence_prompt.txt', 'r') as f:
-            cls._frame_sequence_prompt = f.read()
-        with open('./data/merge_chunk_prompt.txt', 'r') as f:
-            cls._merge_chunk_prompt = f.read()
+        cls._frame_sequence_prompt = Prompts.get(PromptId.DESCRIBE_FRAME_SEQUENCE)
+        cls._merge_chunk_prompt = Prompts.get(PromptId.MERGE_CHUNKS)
     
     def __init__(self, 
                  video_path: str, 
@@ -63,7 +62,7 @@ class VideoSpliter:
 
         # 2. Merge frames into frame sequence & create messages lists to send to LLM
         Logger.log_print('Merging frames & Building messages...')
-        base_system_mes = SystemMessage(APIManager.format_prompt(
+        base_system_mes = SystemMessage(Prompts.format_prompt(
             self._frame_sequence_prompt,
             video_description=self.video_description, 
             frame_count=self.settings.frame_per_small_chunk
@@ -124,7 +123,7 @@ class VideoSpliter:
         Logger.log_print(f'No. of Buffered Lists: {buffered_msgs_list}')
 
         # 2. Construct Messages Lists
-        msgs_lists = [[SystemMessage(APIManager.format_prompt(
+        msgs_lists = [[SystemMessage(Prompts.format_prompt(
             self._merge_chunk_prompt,
             video_description=self.video_description, 
             text_count=msgs_per_list + 1 if (i+1 >= buffered_msgs_list) else 0
