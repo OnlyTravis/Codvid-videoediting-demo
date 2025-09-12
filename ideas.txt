@@ -1,0 +1,24 @@
+Positive, neg script
+|
+V
+~5 chunks per sentence
+
+- prompt (req)
+- raw footages
+
+|
+V
+
+Chunking
+
+| + Prompt
+V
+===========================
+Script
+- pos (flow, order)
+  - sentence by sentence
+- neg
+  - sentence by sentence
+===========================
+| Embedding compare
+V
