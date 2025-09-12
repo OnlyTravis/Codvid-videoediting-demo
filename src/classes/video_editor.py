@@ -6,12 +6,6 @@ from src.tools.prompts import PromptId, Prompts
 from src.classes.chunk import Chunk
 
 class VideoEditor:
-    _generate_video_script_prompt: str
-
-    @classmethod
-    def init(cls):
-        cls._generate_video_script_prompt = Prompts.get(PromptId.VIDEO_SCRIPT)
-
     def __init__(self,
                  video_chunks: list[list[Chunk]],
                  user_prompt: str):
@@ -24,6 +18,8 @@ class VideoEditor:
         if (self.script == ''):
             Logger.log_print('Video script not present, generating script...')
             self.generate_video_script()
+        
+        self.remove_redundant_chunks()
     
     def generate_video_script(self):
         '''
@@ -31,7 +27,7 @@ class VideoEditor:
         '''
         # 1. Creating Messages
         msgs: list[BaseMessage] = []
-        msgs.append(SystemMessage(self._generate_video_script_prompt))
+        msgs.append(SystemMessage(Prompts.get(PromptId.VIDEO_SCRIPT)))
         msgs.append(HumanMessage(self.user_prompt))
         for i in range(len(self.video_chunks)):
             text = f'Video {i}:\n'
@@ -51,3 +47,18 @@ class VideoEditor:
         Detect redundant chunk based on chunk's description & self.script
         Moves redundant chunks into self.removed_chunks
         '''
+        # 1. Assemble Messages
+        msgs: list[BaseMessage] = []
+        msgs.append(SystemMessage(Prompts.get(PromptId.REMOVE_CHUNKS)))
+        msgs.append(HumanMessage(f'Video Script: \n{self.script}'))
+        for i in range(len(self.video_chunks)):
+            text = ''
+            for j in range(len(self.video_chunks[i])):
+                chunk = self.video_chunks[i][j]
+                text += f'Video {i+1}, Chunk_id({j+1}): {chunk.summary}\n'
+            msgs.append(HumanMessage(text))
+
+        # 2. Send to llm
+        APIManager.detect_redundant_chunks(msgs)
+
+    

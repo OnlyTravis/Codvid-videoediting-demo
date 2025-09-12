@@ -1,0 +1,4 @@
+Change VideoScript
+Fix Chunk Class Structure
+Merge Chunk Output
+Add audio interpretation

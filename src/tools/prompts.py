@@ -19,7 +19,7 @@ class Prompts:
     @classmethod
     def init(cls):
         # 1. Load prompts
-        for prompt_id, file_name in _file_names.values():
+        for prompt_id, file_name in _file_names.items():
             with open(f'./data/{file_name}') as f:
                 cls._prompts[prompt_id] = f.read()
     

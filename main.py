@@ -16,7 +16,6 @@ def main():
     Prompts.init()
     APIManager.init()
     VideoSpliter.init()
-    VideoEditor.init()
 
     # 2. Run Test
     test_1()

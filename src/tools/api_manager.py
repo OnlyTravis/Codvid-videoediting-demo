@@ -99,5 +99,10 @@ class APIManager:
         return ai_msg.content
     
     @classmethod 
-    def detect_redundant_chunks(cls, msgs: list[BaseMessage]) -> str:
-        pass
+    def detect_redundant_chunks(cls, msgs: list[BaseMessage]) -> list[int]:
+        # 1. Send to LLM
+        Logger.log_file('detect_redundant_chunks_input.txt', msgs)
+        ai_msg = cls._google_llm.invoke(msgs)
+        Logger.log_file('detect_redundant_chunks_raw_output.txt', ai_msg)
+
+        # 2. Parse output
