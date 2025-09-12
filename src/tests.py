@@ -24,5 +24,5 @@ def test_1():
     )
     video_splitter = VideoSpliter(file_name, video_descriptions[0], split_settings)
     chunks = video_splitter.split_video()
-    editor = VideoEditor(chunks, prompt)
+    editor = VideoEditor([chunks], prompt)
     editor.auto_edit()

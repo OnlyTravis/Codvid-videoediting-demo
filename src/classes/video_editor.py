@@ -29,8 +29,8 @@ class VideoEditor:
         for i in range(len(self.video_chunks)):
             text = f'Video {i}:\n'
             text += '\n'.join([
-                chunk.summary
-                for chunk in self.video_chunks[i]
+                f"Chunk {j}'s Summary: {self.video_chunks[i][j].summary}"
+                for j in range(len(self.video_chunks[i]))
             ])
             msgs.append(HumanMessage(text))
         

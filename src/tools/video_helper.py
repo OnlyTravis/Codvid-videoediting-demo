@@ -22,7 +22,7 @@ class VideoHelper:
         vidcap = cv2.VideoCapture(video_path)
         interval_ms = interval_s * 1000
         frame_folder = cls.create_frame_folder()
-        print(f'Created Frame Folder: {frame_folder}')
+        Logger.log_print(f'Created Frame Folder: {frame_folder}')
 
         # 2. Check resolution
         w  = vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)
@@ -32,11 +32,11 @@ class VideoHelper:
 
         # 3. Extract frames
         count = 0
+        Logger.log_print(f'Extracting Frames...')
         while True:
             # 3.1 Read frame
             vidcap.set(cv2.CAP_PROP_POS_MSEC, (count*interval_ms))
             success, image = vidcap.read()
-            Logger.log_print(f'Reading Frame no. {count}: {"Success" if success else "Failed"}')
             if (not success): break
 
             # 3.2 Check resize
@@ -50,7 +50,7 @@ class VideoHelper:
         
         # 4. Return folder name
         vidcap.release()
-        print(f'End of extracing frames from {video_path}.')
+        print(f'Finished extracing frames from {video_path}.')
         return (count, frame_folder)
 
     @classmethod    
